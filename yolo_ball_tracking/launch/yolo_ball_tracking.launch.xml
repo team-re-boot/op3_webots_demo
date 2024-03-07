@@ -1,0 +1,19 @@
+<launch>
+  <arg name="width" default="640.0"/>
+  <arg name="height" default="480.0"/>
+  <arg name="target_class_name" default="sports ball"/>
+
+  <node pkg="yolo_ball_tracking" exec="image_converter.py" name="image_converter"/>
+
+  <include file="$(find-pkg-share yolov8_bringup)/launch/yolov8.launch.py">
+    <arg name="input_image_topic" value="/convert/image"/>
+  </include>
+
+  <node pkg="yolo_ball_tracking" exec="yolo_ball_tracking_node" name="yolo_ball_tracking" output="screen">
+    <param name="width" value="$(var width)"/>
+    <param name="height" value="$(var height)"/>
+    <param name="target_class_name" value="$(var target_class_name)"/>
+    <remap from="joint_states" to="/robotis_op3/joint_states"/>
+    <remap from="target_joint_states" to="/robotis_op3/target_joint_states"/>
+  </node>
+</launch>
